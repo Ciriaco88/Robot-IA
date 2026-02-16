@@ -1,0 +1,49 @@
+# --- SEGURIDAD Y PRIVACIDAD ---
+# Tu API Key de Gemini y configuraciones locales
+config/.env
+
+# --- XUBUNTU / LINUX SYSTEM FILES ---
+.DS_Store
+.directory
+.Trash-*
+.fuse_hidden*
+.nfs*
+# Miniaturas de Thunar/XFCE
+.thumbnails/
+# Archivos temporales de editores (Mousepad/Gedit/Nano)
+*~
+# Archivos temporales de unidades externas/red
+.xdg-volume-info
+.VolumeIcon.icns
+
+# --- PYTHON / DESARROLLO ---
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# --- DATOS Y PERSISTENCIA (Fractal-Bot) ---
+# Evitamos subir tu memoria personal y logs de error de la RPi 5
+data/history.json
+logs/*.log
+
+# --- MODELOS DE IA (Archivos Pesados) ---
+# Los modelos .onnx de Piper y .pt de Whisper suelen ser grandes
+# Es mejor bajarlos directamente en la RPi 5/Pi Zero
+models/*.onnx
+models/*.pt
+models/*.json
+
+# --- BINARIOS PICO 2 ---
+# Archivos de compilación de C/C++ para la Pico
+pico_firmware/build/
+pico_firmware/.cmake/
+*.uf2
+*.elf
+*.bin
