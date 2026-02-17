@@ -14,7 +14,7 @@ class FractalBrain:
         
         # 2. Inicialización de cliente y modelo
         self.client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
-        self.model_id = "gemini-2.5-flash"
+        self.model_id = "gemini-3-flash-preview"
         
         # 3. Carga de reglas y creación de sesión persistente
         self.system_instruction = self._load_rules(rules_path)
