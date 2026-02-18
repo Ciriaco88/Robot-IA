@@ -10,3 +10,5 @@ Resumen para tu cuaderno de notas:
     pip install python-dotenv google-generativeai
     
     python3 brain.py
+    
+    para acortar directorios de la terminal: PROMPT_DIRTRIM=2
