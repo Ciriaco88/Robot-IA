@@ -1,17 +1,21 @@
 import sys
 import os
 
-# Añadimos la carpeta src_brain al camino de búsqueda de Python
-sys.path.append(os.path.join(os.path.dirname(__file__), 'src_brain'))
+# Detectar el directorio base del proyecto de forma dinámica
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if base_dir not in sys.path:
+    sys.path.append(base_dir)
 
 from brain import FractalBrain
 from ear import FractalEar
+from voice import FractalVoice
 
 def main():
     # 1. Inicializar órganos
     print("--- INICIALIZANDO FRACTAL-BOT (Generación 3) ---")
     cerebro = FractalBrain()
     oido = FractalEar()
+    voz = FractalVoice()
     
     print("\n✅ Sistemas listos. Ya puedes hablar con el robot.")
     print("(Di 'salir' o pulsa Ctrl+C para terminar)\n")
@@ -26,14 +30,22 @@ def main():
                 
                 # Comprobar si el usuario quiere salir
                 if any(palabra in texto_usuario.lower() for palabra in ["salir", "exit", "apagar"]):
-                    print("🤖 Robot: Entendido. Cerrando sistemas...")
+                    msg_despedida = "Entendido. Cerrando sistemas... Adiós."
+                    print(f"🤖 Robot: {msg_despedida}")
+                    voz.speak(msg_despedida)
                     break
                 
-                # 3. Fase de Pensamiento y Respuesta
+                # 3. Fase de Pensamiento (Streaming en consola)
                 print("🤖 Robot: ", end="", flush=True)
+                respuesta_completa = ""
                 for trozo in cerebro.think(texto_usuario):
                     print(trozo, end="", flush=True)
-                print("\n") # Salto de línea al terminar la respuesta
+                    respuesta_completa += trozo
+                print() # Salto de línea
+                
+                # 4. Fase de Habla
+                if respuesta_completa:
+                    voz.speak(respuesta_completa)
             else:
                 # Si no detectó voz o no entendió
                 continue

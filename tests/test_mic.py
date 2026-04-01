@@ -1,35 +1,37 @@
 import speech_recognition as sr
+import sounddevice as sd
+import numpy as np
 
-def test_microphone():
+def test_microphone_stable():
     recognizer = sr.Recognizer()
+    fs = 44100
+    duration = 5  # Duración de escucha en segundos
+    device_index = 0  # Usamos el dispositivo 0 que confirmamos con debug_record
     
-    print("--- DIAGNÓSTICO DE AUDIO ---")
+    print("--- DIAGNÓSTICO DE AUDIO ESTABLE (sounddevice) ---")
     
-    # 1. Listar dispositivos (Para ver si Xubuntu ve tu micro)
-    mic_list = sr.Microphone.list_microphone_names()
-    print(f"\nDispositivos encontrados: {len(mic_list)}")
-    for i, name in enumerate(mic_list):
-        print(f" [{i}] - {name}")
-
-    # 2. Intentar escuchar
     try:
-        with sr.Microphone() as source:
-            print("\n>>> Ajustando ruido ambiental... (Silencio 1 seg)")
-            recognizer.adjust_for_ambient_noise(source, duration=1)
-            
-            print(">>> Di algo ahora mismo...")
-            audio = recognizer.listen(source, timeout=3)
-            
-            print(">>> ¡Audio capturado! Intentando reconocer con Google...")
-            # Usamos Google solo para ver si el flujo de datos es correcto
-            text = recognizer.recognize_google(audio, language="es-ES")
-            print(f"\nResultado del test: \"{text}\"")
-            print("\n✅ EL OÍDO FUNCIONA PERFECTAMENTE.")
+        print(f"🎤 Usando dispositivo [{device_index}]...")
+        print(f">>> Grabando {duration} segundos... ¡HABLA AHORA!")
+        
+        # Grabamos audio directo
+        audio_data = sd.rec(int(duration * fs), samplerate=fs, channels=1, dtype='int16')
+        sd.wait()
+        
+        print(">>> Audio capturado. Procesando reconocimiento con Google...")
+        
+        # Convertimos los datos capturados a un formato que sr.Recognizer entienda
+        audio_segment = sr.AudioData(audio_data.tobytes(), fs, 2)
+        
+        # Reconocimiento
+        text = recognizer.recognize_google(audio_segment, language="es-ES")
+        print(f"\n✅ RESULTADO DEL TEST: \"{text}\"")
+        print("\nEl robot ya puede oírte correctamente.")
 
-    except sr.WaitTimeoutError:
-        print("\n❌ ERROR: El micro no detectó sonido (Timeout).")
+    except sr.UnknownValueError:
+        print("\n❌ Error: No se entendió el audio. Prueba a hablar más claro.")
     except Exception as e:
         print(f"\n❌ ERROR TÉCNICO: {e}")
 
 if __name__ == "__main__":
-    test_microphone()
+    test_microphone_stable()

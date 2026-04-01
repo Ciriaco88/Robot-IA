@@ -4,7 +4,7 @@ Resumen para tu cuaderno de notas:
     python3 -m venv .venv
 
     Activar (El comando clave): ```bash
-    source .venv/bin/activate
+    sudo source .venv/bin/activate
 
     Instalar dependencias (Solo la primera vez): ```bash
     pip install python-dotenv google-generativeai
