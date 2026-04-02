@@ -23,9 +23,9 @@ class FractalBrain:
             model=self.model_id,
             config={
                 'system_instruction': self.system_instruction,
-                #'temperature': 0.7,       # Reducir creatividad para más velocidad
-                #'max_output_tokens': 150, # Respuestas breves (Robot)
-                'top_p': 0.9,
+                'temperature': 0.4,       # Respuesta más predecible y rápida
+                'max_output_tokens': 100, # Garantizamos brevedad para el motor de voz
+                'top_p': 0.8,
                 'top_k': 40,
             }
         )

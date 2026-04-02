@@ -61,7 +61,8 @@ class FractalEar:
                         result = json.loads(self.rec.Result())
                         text = result.get("text", "").strip()
                         if text:
-                            print(f"\r✅ Entendido: {text}")
+                            # Limpiamos la línea anterior con espacios antes de imprimir
+                            print(f"\r✅ Entendido: {text}".ljust(80))
                             return text
                         else:
                             print("\r👂 Escuchando (Di algo)... ", end="", flush=True)
@@ -70,7 +71,8 @@ class FractalEar:
                         partial = json.loads(self.rec.PartialResult())
                         partial_text = partial.get("partial", "").strip()
                         if partial_text:
-                            sys.stdout.write(f"\r👂 Entendiendo: {partial_text}...")
+                            # Mostramos en la misma línea con padding para borrar restos
+                            sys.stdout.write(f"\r👂 Entendiendo: {partial_text}... ".ljust(80))
                             sys.stdout.flush()
 
         except KeyboardInterrupt:
