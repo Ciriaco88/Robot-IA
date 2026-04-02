@@ -33,12 +33,11 @@ dist/
 data/history.json
 logs/*.log
 
-# --- MODELOS DE IA (Archivos Pesados) ---
-# Los modelos .onnx de Piper y .pt de Whisper suelen ser grandes
-# Es mejor bajarlos directamente en la RPi 5/Pi Zero
+# Los modelos de IA suelen ser pesados, mejor bajarlos localmente
 models/*.onnx
 models/*.pt
 models/*.json
+models/vosk-model-*/
 
 # --- BINARIOS PICO 2 ---
 # Archivos de compilación de C/C++ para la Pico

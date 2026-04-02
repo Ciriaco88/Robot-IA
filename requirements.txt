@@ -1,7 +1,6 @@
 python-dotenv
 google-genai
-SpeechRecognition
-PyAudio
+vosk
 piper-tts
 sounddevice
 numpy

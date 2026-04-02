@@ -1,43 +1,62 @@
-import speech_recognition as sr
-import sounddevice as sd
+import os
+import json
 import numpy as np
-import io
+import sounddevice as sd
+from vosk import Model, KaldiRecognizer
 
 class FractalEar:
-    def __init__(self, device_index=0, sample_rate=44100):
-        self.recognizer = sr.Recognizer()
+    def __init__(self, device_index=0, sample_rate=16000):
+        """
+        Inicializa el oído usando Vosk para procesamiento local.
+        Vosk funciona mejor con 16000Hz.
+        """
         self.device_index = device_index
         self.sample_rate = sample_rate
-        print(f"🎤 Oído inicializado (sounddevice) - Micro: {device_index}")
+        
+        # Determinar ruta del modelo
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        model_path = os.path.join(base_dir, "models", "vosk-model-small-es-0.42")
+        
+        if not os.path.exists(model_path):
+            print(f"⚠️ Alerta: Modelo Vosk no encontrado en {model_path}")
+            self.model = None
+        else:
+            self.model = Model(model_path)
+            self.rec = KaldiRecognizer(self.model, self.sample_rate)
+            print(f"🎤 Oído inicializado (Vosk Local) - Micro: {device_index}")
 
     def listen(self, duration=4):
-        """Escucha ráfagas de audio usando sounddevice."""
-        print("👂 Escuchando...")
+        """Escucha audio y lo convierte a texto localmente."""
+        if not self.model:
+            print("❌ Error: No se puede escuchar sin el modelo Vosk cargado.")
+            return None
+
+        print("👂 Escuchando (Vosk)...")
         try:
-            # Captura de audio
-            # Usamos int16 porque SpeechRecognition lo prefiere
+            # Captura de audio (mono, int16 para Vosk)
             audio_data = sd.rec(int(duration * self.sample_rate), 
                                 samplerate=self.sample_rate, 
                                 channels=1, 
                                 dtype='int16')
             sd.wait()
             
-            # Verificar si hay señal mínima (evitamos procesar silencio total)
+            # Verificar señal mínima
             if np.max(np.abs(audio_data)) < 100:
                 return None
 
-            print("🧠 Procesando voz...")
-            # Convertimos a AudioData de SpeechRecognition
-            # width=2 para int16
-            audio_segment = sr.AudioData(audio_data.tobytes(), self.sample_rate, 2)
+            print("🧠 Procesando voz localmente...")
             
-            text = self.recognizer.recognize_google(audio_segment, language="es-ES")
-            return text
+            # Procesar con Vosk
+            if self.rec.AcceptWaveform(audio_data.tobytes()):
+                result = json.loads(self.rec.Result())
+            else:
+                result = json.loads(self.rec.FinalResult())
             
-        except sr.UnknownValueError:
-            return None # No entendió nada
+            text = result.get("text", "").strip()
+            return text if text else None
+            
         except Exception as e:
-            # Capturamos timeouts o errores de hardware
+            print(f"❌ Error en reconocimiento local: {e}")
             return None
 
 if __name__ == "__main__":
