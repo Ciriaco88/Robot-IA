@@ -1,37 +1,33 @@
-import speech_recognition as sr
-import sounddevice as sd
-import numpy as np
+import sys
+import os
 
-def test_microphone_stable():
-    recognizer = sr.Recognizer()
-    fs = 44100
-    duration = 5  # Duración de escucha en segundos
-    device_index = 0  # Usamos el dispositivo 0 que confirmamos con debug_record
-    
-    print("--- DIAGNÓSTICO DE AUDIO ESTABLE (sounddevice) ---")
+# Añadimos el directorio raíz al path para poder importar src_brain
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from src_brain.ear import FractalEar
+
+def test_microphone_vosk():
+    print("--- DIAGNÓSTICO DE AUDIO INTERACTIVO (Vosk Local) ---")
     
     try:
-        print(f"🎤 Usando dispositivo [{device_index}]...")
-        print(f">>> Grabando {duration} segundos... ¡HABLA AHORA!")
+        # Inicializamos el oído real del robot
+        oido = FractalEar()
         
-        # Grabamos audio directo
-        audio_data = sd.rec(int(duration * fs), samplerate=fs, channels=1, dtype='int16')
-        sd.wait()
+        print("\nPrueba de escucha interactiva:")
+        print(">>> HABLA AHORA (di una frase corta o 'hola robot')")
         
-        print(">>> Audio capturado. Procesando reconocimiento con Google...")
+        # Usamos el método real que usa el robot
+        text = oido.listen()
         
-        # Convertimos los datos capturados a un formato que sr.Recognizer entienda
-        audio_segment = sr.AudioData(audio_data.tobytes(), fs, 2)
-        
-        # Reconocimiento
-        text = recognizer.recognize_google(audio_segment, language="es-ES")
-        print(f"\n✅ RESULTADO DEL TEST: \"{text}\"")
-        print("\nEl robot ya puede oírte correctamente.")
+        if text:
+            print(f"\n✅ TEST EXITOSO: Has dicho: \"{text}\"")
+            print("El reconocimiento local está funcionando perfectamente.")
+        else:
+            print("\n⚠️ No se detectó ninguna frase. Revisa tu micro o habla más alto.")
 
-    except sr.UnknownValueError:
-        print("\n❌ Error: No se entendió el audio. Prueba a hablar más claro.")
     except Exception as e:
         print(f"\n❌ ERROR TÉCNICO: {e}")
+        print("Asegúrate de haber descargado el modelo en models/vosk-model-small-es-0.42")
 
 if __name__ == "__main__":
-    test_microphone_stable()
+    test_microphone_vosk()
