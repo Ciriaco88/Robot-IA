@@ -10,8 +10,8 @@ def test_microphone_vosk():
     print("--- DIAGNÓSTICO DE AUDIO INTERACTIVO (Vosk Local) ---")
     
     try:
-        # Inicializamos el oído real del robot
-        oido = FractalEar()
+        # Usamos el ID 18 (default) que permite remuestreo a 16000Hz
+        oido = FractalEar(device_index=18)
         
         print("\nPrueba de escucha interactiva:")
         print(">>> HABLA AHORA (di una frase corta o 'hola robot')")

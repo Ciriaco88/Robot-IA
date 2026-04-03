@@ -7,10 +7,10 @@ import sounddevice as sd
 from vosk import Model, KaldiRecognizer
 
 class FractalEar:
-    def __init__(self, device_index=None, sample_rate=44100):
+    def __init__(self, device_index=None, sample_rate=16000):
         """
-        Inicializa el oído con Vosk y una colas para streaming.
-        44100Hz es compatible con casi todo el hardware.
+        44100Hz es compatible con casi todo el hardware, pero 16000Hz 
+        es mucho más ligero para el CPU del robot y suficiente para voz.
         """
         self.device_index = device_index
         self.sample_rate = sample_rate
@@ -48,7 +48,7 @@ class FractalEar:
         
         try:
             with sd.RawInputStream(samplerate=self.sample_rate, 
-                                blocksize=8000, 
+                                blocksize=4000, 
                                 device=self.device_index, 
                                 dtype='int16',
                                 channels=1, 
